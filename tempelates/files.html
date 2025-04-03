@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Files</title>
+</head>
+<body>
+    <h2>My Uploaded Files</h2>
+    <table border="1">
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Size</th>
+            <th>File Type</th>
+            <th>Download</th>
+            <th>Delete</th>
+            <th>Share</th>
+        </tr>
+        {{ range .files }}
+        <tr>
+            <td>{{ .Title }}</td>
+            <td>{{ .Description }}</td>
+            <td>{{ .Size }} bytes</td>
+            <td>{{ .FileType }}</td>
+            <td><a href="/download/{{ .UniqueID }}">Download</a></td>
+            <td><a href="/delete/{{ .UniqueID }}" onclick="return confirm('Are you sure?')">Delete</a></td>
+            <td>
+                {{ if .TinyURL }}
+                    <a href="{{ .TinyURL }}" target="_blank">View</a>
+                {{ else }}
+                    <a href="/share/{{ .UniqueID }}">Generate Tiny URL</a>
+                {{ end }}
+            </td>
+        </tr>
+        {{ end }}
+    </table>
+    <br>
+    <a href="/upload">Upload New File</a>
+</body>
+</html>
