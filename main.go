@@ -12,7 +12,7 @@ func main() { // 👈 Make sure this function exists!
 	InitDB()
 
 	r := gin.Default()
-	r.LoadHTMLGlob("D:/go/loginpage/tempelates/*")
+	r.LoadHTMLGlob("D:/go/fileuplode/tempelates/*")
 
 	// Session middleware
 	store := cookie.NewStore([]byte("secret"))
@@ -31,7 +31,7 @@ func main() { // 👈 Make sure this function exists!
 	r.GET("/upload", ShowUploadPage)
 	r.POST("/upload", UploadFile)
 	r.GET("/files", ListFiles)
-	r.GET("/download/:id", DownloadFile)
+	r.GET("/download/:uniqueID", DownloadFile)
 	r.GET("/delete/:id", DeleteFile)
 	r.GET("/share/:id", ShareFile)
 	r.GET("/:tinyURL", RedirectToFile)
