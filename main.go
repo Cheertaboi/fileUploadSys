@@ -12,7 +12,8 @@ func main() { // 👈 Make sure this function exists!
 	InitDB()
 
 	r := gin.Default()
-	r.LoadHTMLGlob("D:/go/fileuplode/tempelates/*")
+	r.Static("/static", "./static")
+	r.LoadHTMLGlob("C:/Users/HarshVardhana/Music/login/fileUploadSys/tempelates/*")
 
 	// Session middleware
 	store := cookie.NewStore([]byte("secret"))
