@@ -15,5 +15,10 @@
             <a class="button-link" href="/files">Back to Files</a>
         </div>
     </div>
+    {{ if .showLogout }}
+  <form method="POST" action="/logout">
+    <button type="submit">Logout</button>
+  </form>
+{{ end }}
 </body>
 </html>

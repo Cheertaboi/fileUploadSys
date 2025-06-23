@@ -41,5 +41,10 @@
             <a class="button-link" href="/upload">Upload New File</a>
         </div>
     </div>
+    {{ if .showLogout }}
+  <form method="POST" action="/logout">
+    <button type="submit">Logout</button>
+  </form>
+{{ end }}
 </body>
 </html>

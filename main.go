@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 )
 
-func main() { // 👈 Make sure this function exists!
+func main() {
 	InitDB()
 
 	r := gin.Default()
@@ -19,31 +20,44 @@ func main() { // 👈 Make sure this function exists!
 	store := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("session", store))
 
-	// Routes
+	// Public routes
 	r.GET("/", func(c *gin.Context) {
-		c.HTML(200, "home.html", nil) // Make sure "home.html" exists
+		c.HTML(http.StatusOK, "home.html", nil)
 	})
+
 	r.GET("/register", ShowRegisterPage)
 	r.POST("/register", RegisterUser)
 	r.GET("/login", ShowLoginPage)
 	r.POST("/login", LoginUser)
-	r.GET("/home", ShowHomePage)
 	r.GET("/logout", LogoutUser)
-	r.GET("/upload", ShowUploadPage)
-	r.POST("/upload", UploadFile)
-	r.GET("/files", ListFiles)
-	r.GET("/download/:uniqueID", DownloadFile)
-	r.GET("/delete/:id", DeleteFile)
-	r.GET("/share/:id", ShareFile)
-	r.GET("/:tinyURL", RedirectToFile)
 
-	// Cheacking for all the routes
-	for _, route := range r.Routes() {
-		fmt.Printf("Path: %s | Method: %s | Handlers: %d\n", route.Path, route.Method, len(route.Handler))
+	// Forgot Password (Microservice Integration)
+	r.GET("/forgot-password", ShowForgotPasswordPage)
+	r.POST("/forgot-password", HandleForgotPassword)
+	r.GET("/reset", ShowResetPasswordPage)
+	r.POST("/reset", HandleResetPassword)
 
+	// Protected routes
+	auth := r.Group("/")
+	auth.Use(AuthRequired())
+	{
+		auth.GET("/home", ShowHomePage)
+		auth.GET("/upload", ShowUploadPage)
+		auth.POST("/upload", UploadFile)
+		auth.GET("/files", ListFiles)
+		auth.GET("/download/:uniqueID", DownloadFile)
+		auth.GET("/delete/:id", DeleteFile)
+		auth.GET("/share/:id", ShareFile)
 	}
 
-	// Start server
+	// Public tiny URL route
+	r.GET("/:tinyURL", RedirectToFile)
+
+	// Debug all routes
+	for _, route := range r.Routes() {
+		fmt.Printf("Path: %s | Method: %s\n", route.Path, route.Method)
+	}
 
 	r.Run(":8080")
+
 }

@@ -15,7 +15,7 @@ type File struct {
 	Filename    string    `gorm:"not null"` // Original file name
 	FilePath    string    `gorm:"not null"` // Path where the file is stored
 	FileType    string    `gorm:"not null"` // MIME type (e.g., image/png, application/pdf)
-	Size        int64     `gorm:"not null"` // File size in bytes
+	Size        int     `gorm:"not null"` // File size in bytes
 	Description string    // Optional file description
 	TinyURL     string    `gorm:"unique"` // Short URL for sharing
 	CreatedAt   time.Time `gorm:"autoCreateTime"`

@@ -5,15 +5,21 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	 "net/url"
 	"os"
 	"path/filepath"
 	"strings"
-
+    
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+
+
+	
+	
 )
+var otpStore = make(map[string]string)
 
 // Show registration form
 func ShowRegisterPage(c *gin.Context) {
@@ -285,6 +291,84 @@ func LogoutUser(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Clear()
 	session.Save()
+
+	c.Redirect(http.StatusSeeOther, "/login")
+}
+func AuthRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		session := sessions.Default(c)
+		if session.Get("user_id") == nil {
+			c.Redirect(http.StatusSeeOther, "/login")
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}
+
+// Show the Forgot Password form
+func ShowForgotPasswordPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "forgot.html", nil)
+}
+
+// POST: Send request to auth service to send reset token
+
+
+// OTP email body struct
+
+
+// Send OTP email using MailSlurp
+
+
+
+
+
+// Show the reset form
+func ShowResetPasswordPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "reset.html", nil)
+}
+// OTP store (in-memory map; ideally move to Redis in production)
+
+
+func HandleForgotPassword(c *gin.Context) {
+	email := c.PostForm("email")
+
+	// 1. Check if user exists
+	var user User
+	if err := DB.Where("email = ?", email).First(&user).Error; err != nil {
+		c.HTML(http.StatusBadRequest, "forgot.html", gin.H{"error": "Email not registered"})
+		return
+	}
+
+	// 2. Call microservice to generate and send OTP
+	resp, err := http.PostForm("http://localhost:9090/send-otp", url.Values{"email": {email}})
+	if err != nil || resp.StatusCode != 200 {
+		c.HTML(http.StatusInternalServerError, "forgot.html", gin.H{"error": "Failed to send OTP email"})
+		return
+	}
+
+	// 3. Show OTP input form
+	c.HTML(http.StatusOK, "reset.html", gin.H{"email": email})
+}
+
+
+
+
+// POST: Send new password + token to auth microservice
+func HandleResetPassword(c *gin.Context) {
+	email := c.PostForm("email")
+	token := c.PostForm("token")
+	newPassword := c.PostForm("new_password")
+
+	resp, err := http.PostForm("http://localhost:9090/reset-password", url.Values{
+		"email":        {email},
+		"token":        {token},
+		"new_password": {newPassword},
+	})
+	if err != nil || resp.StatusCode != 200 {
+		c.HTML(http.StatusInternalServerError, "reset.html", gin.H{"error": "Failed to reset password"})
+		return
+	}
 
 	c.Redirect(http.StatusSeeOther, "/login")
 }

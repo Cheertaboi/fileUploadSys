@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reset Password</title>
+  <style>
+    body { font-family: Arial; padding: 30px; }
+    input, button { margin: 10px 0; padding: 10px; width: 100%; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h2>Reset Your Password</h2>
+
+  {{ if .error }}
+    <p class="error">{{ .error }}</p>
+  {{ end }}
+
+  <form action="/reset" method="POST">
+    <label>Email:</label>
+    <input type="email" name="email" required>
+
+    <label>Reset Token:</label>
+    <input type="text" name="token" required>
+
+    <label>New Password:</label>
+    <input type="password" name="new_password" required>
+
+    <button type="submit">Reset Password</button>
+  </form>
+
+  <p><a href="/login">Back to Login</a></p>
+</body>
+</html>
+

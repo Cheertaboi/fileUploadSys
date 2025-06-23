@@ -36,5 +36,10 @@
             return true;
         }
     </script>
+    {{ if .showLogout }}
+  <form method="POST" action="/logout">
+    <button type="submit">Logout</button>
+  </form>
+{{ end }}
 </body>
 </html>
